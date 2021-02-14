@@ -98,23 +98,3 @@ Packet* Packet::decode(std::string data) {
   out->set_data(data.substr(5, length - 10));
   return out;
 }
-
-int main(int argc, char const *argv[]) {/*
-  if (argv[1][0] == 'e') {
-    Packet* p = new Packet();
-    p->set_type(PacketType::HEARTBEAT);
-    p->set_data(std::string(argv[2]));
-    std::string packet = p->encode();
-    std::cout << packet << '\n';
-  }else if (argv[1][0] == 'd') {
-    try {
-      Packet* p = Packet::decode(std::string(argv[2]));
-      std::cout << p->get_type() << '\n';
-      std::cout << p->get_data() << '\n';
-    }catch (int e) {
-      std::cout << "Error: " << e << '\n';
-    }
-  }*/
-  std::cout << Packet::fletcher16(std::string(argv[1])) << '\n';
-  return 0;
-}
