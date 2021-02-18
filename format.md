@@ -27,3 +27,9 @@
 |2|Invalid length|
 |3|Invalid end byte|
 |4|Invalid checksum|
+
+#### Info
+
+|a|a|a|
+|-|-|-|
+|b|bb|b|
