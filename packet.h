@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-enum class PacketType {
+enum PacketType {
   HEARTBEAT = 0x01,
   TELEMETRY = 0x02,
   IGNITION = 0x03,
