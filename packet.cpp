@@ -1,28 +1,34 @@
 #include "packet.h"
 
 #include <stdlib.h>
-#include <cstdlib>
-#include <iostream>
-#include <sstream>
+// #include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 Packet::Packet() {
 
 }
 
-std::string Packet::encode() {
-  std::string chunk1;
-  chunk1 += "#";
-  chunk1 += this->hexs(this->length());
-  chunk1 += this->hexs(this->type);
-  chunk1 += this->data;
-  return chunk1 + this->fletcher16(chunk1) + ';';
+void Packet::encode(char* out) {
+  char chunk1[this->length() + 1] = {};
+  strcat(chunk1, "#");
+  char buf[100] = {};
+  this->hexs(buf, this->length());
+  strcat(chunk1, buf);
+  this->hexs(buf, this->type);
+  strcat(chunk1, buf);
+  strcat(chunk1, this->data);
+  strcpy(out, chunk1);
+  this->fletcher16(buf, chunk1);
+  strcat(out, buf);
+  strcat(out, ";");
 }
 
-std::string Packet::fletcher16(std::string in)
+void Packet::fletcher16(char* buf, char* in)
 {
-  uint8_t const *data = reinterpret_cast<const uint8_t*>(&in[0]);
-  size_t bytes = in.length();
-  uint16_t sum1 = 0xff, sum2 = 0xff;
+  u_int8_t const *data = reinterpret_cast<const u_int8_t*>(&in[0]);
+  size_t bytes = strlen(in);
+  u_int16_t sum1 = 0xff, sum2 = 0xff;
 
   while (bytes) {
           size_t tlen = bytes > 20 ? 20 : bytes;
@@ -36,47 +42,47 @@ std::string Packet::fletcher16(std::string in)
   /* Second reduction step to reduce sums to 8 bits */
   sum1 = (sum1 & 0xff) + (sum1 >> 8);
   sum2 = (sum2 & 0xff) + (sum2 >> 8);
-  uint16_t out = sum2 << 8 | sum1;
-  char a[4];
+  u_int16_t out = sum2 << 8 | sum1;
+  char a[5];
   sprintf(a, "%x", out);
-  std::string b(a);
-  if (b.length() % 2 != 0) {
-    b.insert(0, "0");
+  if (strlen(a) % 2 != 0) {
+    sprintf(a, "0%s", a);
   }
-  return b;
+  strcpy(buf, a);
 }
 
-std::string Packet::hexs(int in) {
-  char len[2];
-  sprintf(len, "%x", in);
+void Packet::hexs(char *buf, unsigned int in) {
+  sprintf(buf, "%x", in);
   if (in <= 15) {
-    len[1] = len[0];
-    len[0] = '0';
+    buf[1] = buf[0];
+    buf[0] = '0';
   }
-  std::string out;
-  out += len[0];
-  out += len[1];
-  return out;
 }
 
-Packet* Packet::decode(std::string data) {
+Packet* Packet::decode(char* raw) {
   Packet* out = new Packet();
-  auto raw = data.c_str();
   // CHECK START BYTE
   if (raw[0] != '#') {
+    #ifdef ARDUINO
     throw 1;
+    #endif
   }
   // CHECK LENGTH
-  std::string temp;
-  temp += raw[1];
-  temp += raw[2];
-  int length = std::stoi(temp, 0, 16);
-  if (length != data.length()) {
+  char temp[3];
+  temp[0] = raw[1];
+  temp[1] = raw[2];
+  temp[2] = '\0';
+  int length = strtol(temp, NULL, 16);
+  if (length != strlen(raw)) {
+    #ifdef ARDUINO
     throw 2;
+    #endif
   }
   // CHECK END BYTE
   if (raw[length-1] != ';') {
+    #ifdef ARDUINO
     throw 3;
+    #endif
   }
   // GET TYPE
   char typea[2];
@@ -85,16 +91,24 @@ Packet* Packet::decode(std::string data) {
   int type = strtol(typea, NULL, 16);
   out->set_type(static_cast<PacketType>(type));
   // CHECK CHECKSUM
-  char old_checksum[4];
-  old_checksum[0] = raw[length - 5];
-  old_checksum[1] = raw[length - 4];
-  old_checksum[2] = raw[length - 3];
-  old_checksum[3] = raw[length - 2];
-  std::string checksum = Packet::fletcher16(data.substr(0, length - 5));
-  if (old_checksum != checksum) {
+  char old_checksum[5];
+  memcpy( old_checksum, &raw[length - 5], 4 );
+  old_checksum[4] = '\0';
+  char new_checksum[245];
+  memcpy(new_checksum, &raw[0], length - 5);
+  new_checksum[length - 5] = '\0';
+  char checksum[5];
+  Packet::fletcher16(checksum, new_checksum);
+  checksum[4] = '\0';
+  if (strcmp(old_checksum, checksum)) {
+    #ifdef ARDUINO
     throw 4;
+    #endif
   }
   // CONVERT DATA
-  out->set_data(data.substr(5, length - 10));
+  char data[245];
+  memcpy(data, &raw[5], length - 10);
+  data[length - 5] = '\0';
+  out->set_data(data);
   return out;
 }

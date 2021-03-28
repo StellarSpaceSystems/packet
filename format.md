@@ -17,7 +17,7 @@
 |0x04|Shutdown Command|Optional Delay (int, ms)|C > E|
 |0x05|ACK (Not used for Heartbeat/Telemetry)|Checksum of ACKed Packet|E > C|
 |0x06|Conf|C > E: none (req), E > C: JSON String|Either|
-|0x07|Info|C > E: none (req), E > C: JSON String|Either|
+|0x07|Info|C > E: none (req), E > C: comma seperated String|Either|
 
 #### C++ Lib exception codes
 
@@ -30,6 +30,6 @@
 
 #### Info
 
-|a|a|a|
-|-|-|-|
-|b|bb|b|
+|Protocol Version|Serial Number|Hardware Version|Software Version|
+|-|-|-|-|
+|||||

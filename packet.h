@@ -1,8 +1,11 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-#include <string>
-#include <iostream>
+#ifdef ARDUINO
+#include "Arduino.h"
+#endif
+
+#include <cstring>
 
 enum PacketType {
   HEARTBEAT = 0x01,
@@ -22,24 +25,24 @@ struct {
 class Packet {
 private:
   PacketType type;
-  std::string data;
+  char data[245];
 
 public:
   Packet();
 
-  int length() {return 10 + this->data.length();}
+  int length() {return 10 + (int) strlen(this->data);}
 
   PacketType get_type() {return this->type;}
   void set_type(PacketType type) {this->type = type;}
 
-  std::string get_data() {return this->data;}
-  void set_data(std::string data) {this->data = data;}
+  char* get_data() {return this->data;}
+  void set_data(char data[]) {strcpy(this->data,data);}
 
-  std::string encode();
+  void encode(char* buf);
 
-  static std::string fletcher16(std::string in);
-  static Packet* decode(std::string data);
-  static std::string hexs(int in);
+  static void fletcher16(char* buf, char* in);
+  static Packet* decode(char* data);
+  static void hexs(char *buf, unsigned int in);
 };
 
 #endif
