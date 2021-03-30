@@ -4,9 +4,10 @@
 #if defined(ARDUINO)
 #include "Arduino.h"
 #else
-#include <stdlib.h>
 #include <cstring>
 #include <cstdio>
+#include <stdint.h>
+#include <cstdlib>
 #endif
 
 Packet::Packet() {
@@ -50,9 +51,11 @@ void Packet::fletcher16(char* buf, char* in)
   char a[5];
   sprintf(a, "%x", out);
   if (strlen(a) % 2 != 0) {
-    sprintf(a, "0%s", a);
+    strcpy(buf, "0");
+    strcat(buf, a);
+  }else{
+    strcpy(buf, a);
   }
-  strcpy(buf, a);
 }
 
 void Packet::hexs(char *buf, unsigned int in) {

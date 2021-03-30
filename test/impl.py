@@ -2,9 +2,7 @@ from packet import Packet, DecodeException
 import sys
 
 if __name__ == '__main__':
-    print(sys.argv)
-    print(Packet.fletcher16(sys.argv[1]))
-    """if sys.argv[1] == "e":
+    if sys.argv[1] == "e":
         p = Packet()
         p.type = Packet.Type.TELEMETRY
         p.data = sys.argv[2]
@@ -15,4 +13,4 @@ if __name__ == '__main__':
             print(p.type)
             print(p.data)
         except DecodeException as e:
-            print(e)"""
+            print(e)
