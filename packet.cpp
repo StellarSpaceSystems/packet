@@ -30,9 +30,9 @@ void Packet::encode(char* out) {
 
 void Packet::fletcher16(char* buf, char* in)
 {
-  u_int8_t const *data = reinterpret_cast<const u_int8_t*>(&in[0]);
+  uint8_t const *data = reinterpret_cast<const uint8_t*>(&in[0]);
   size_t bytes = strlen(in);
-  u_int16_t sum1 = 0xff, sum2 = 0xff;
+  uint16_t sum1 = 0xff, sum2 = 0xff;
 
   while (bytes) {
           size_t tlen = bytes > 20 ? 20 : bytes;
@@ -46,7 +46,7 @@ void Packet::fletcher16(char* buf, char* in)
   /* Second reduction step to reduce sums to 8 bits */
   sum1 = (sum1 & 0xff) + (sum1 >> 8);
   sum2 = (sum2 & 0xff) + (sum2 >> 8);
-  u_int16_t out = sum2 << 8 | sum1;
+  uint16_t out = sum2 << 8 | sum1;
   char a[5];
   sprintf(a, "%x", out);
   if (strlen(a) % 2 != 0) {
@@ -67,7 +67,7 @@ Packet* Packet::decode(char* raw) {
   Packet* out = new Packet();
   // CHECK START BYTE
   if (raw[0] != '#') {
-    #ifdef ARDUINO
+    #ifndef ARDUINO
     throw 1;
     #endif
   }
@@ -78,13 +78,13 @@ Packet* Packet::decode(char* raw) {
   temp[2] = '\0';
   int length = strtol(temp, NULL, 16);
   if (length != strlen(raw)) {
-    #ifdef ARDUINO
+    #ifndef ARDUINO
     throw 2;
     #endif
   }
   // CHECK END BYTE
   if (raw[length-1] != ';') {
-    #ifdef ARDUINO
+    #ifndef ARDUINO
     throw 3;
     #endif
   }
@@ -105,7 +105,7 @@ Packet* Packet::decode(char* raw) {
   Packet::fletcher16(checksum, new_checksum);
   checksum[4] = '\0';
   if (strcmp(old_checksum, checksum)) {
-    #ifdef ARDUINO
+    #ifndef ARDUINO
     throw 4;
     #endif
   }
