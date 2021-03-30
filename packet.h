@@ -3,9 +3,9 @@
 
 #ifdef ARDUINO
 #include "Arduino.h"
-#endif
-
+#elseif
 #include <cstring>
+#endif
 
 enum PacketType {
   HEARTBEAT = 0x01,
