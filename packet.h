@@ -1,9 +1,9 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-#ifdef ARDUINO
+#if defined(ARDUINO)
 #include "Arduino.h"
-#elseif
+#else
 #include <cstring>
 #endif
 

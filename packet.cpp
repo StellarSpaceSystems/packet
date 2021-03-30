@@ -1,10 +1,12 @@
 #include "packet.h"
 
-#ifdef ARDUINO
+
+#if defined(ARDUINO)
 #include "Arduino.h"
-#elseif
+#else
 #include <stdlib.h>
 #include <cstring>
+#include <cstdio>
 #endif
 
 Packet::Packet() {
