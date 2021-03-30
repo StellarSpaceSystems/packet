@@ -74,6 +74,7 @@ Packet* Packet::decode(char* raw) {
     throw 1;
     #else
     Serial.println("start");
+    return NULL;
     #endif
   }
   // CHECK LENGTH
@@ -87,6 +88,7 @@ Packet* Packet::decode(char* raw) {
     throw 2;
     #else
     Serial.println("length");
+    return NULL;
     #endif
   }
   // CHECK END BYTE
@@ -95,6 +97,7 @@ Packet* Packet::decode(char* raw) {
     throw 3;
     #else
     Serial.println("end");
+    return NULL;
     #endif
   }
   // GET TYPE
@@ -118,6 +121,7 @@ Packet* Packet::decode(char* raw) {
     throw 4;
     #else
     Serial.println("checksum");
+    return NULL;
     #endif
   }
   // CONVERT DATA
