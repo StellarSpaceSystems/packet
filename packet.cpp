@@ -72,6 +72,8 @@ Packet* Packet::decode(char* raw) {
   if (raw[0] != '#') {
     #ifndef ARDUINO
     throw 1;
+    #else
+    Serial.println("start");
     #endif
   }
   // CHECK LENGTH
@@ -83,12 +85,16 @@ Packet* Packet::decode(char* raw) {
   if (length != strlen(raw)) {
     #ifndef ARDUINO
     throw 2;
+    #else
+    Serial.println("length");
     #endif
   }
   // CHECK END BYTE
   if (raw[length-1] != ';') {
     #ifndef ARDUINO
     throw 3;
+    #else
+    Serial.println("end");
     #endif
   }
   // GET TYPE
@@ -110,6 +116,8 @@ Packet* Packet::decode(char* raw) {
   if (strcmp(old_checksum, checksum)) {
     #ifndef ARDUINO
     throw 4;
+    #else
+    Serial.println("checksum");
     #endif
   }
   // CONVERT DATA

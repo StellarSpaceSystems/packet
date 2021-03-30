@@ -1,7 +1,7 @@
 Packet = require('../packet')
 
 p = new Packet()
-p.type = Packet.Type.INFO
+p.type = Packet.Type.SHUTDOWN
 //p.data = "{\"value\": 0, \"value2\": 0.0}"
 d = p.encode()
 console.log(d);
